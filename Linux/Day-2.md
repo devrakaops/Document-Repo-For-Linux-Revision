@@ -2,6 +2,7 @@
 ---
 
 # Linux Training – Day 2
+<img width="1069" height="196" alt="image" src="https://github.com/user-attachments/assets/65ae37d4-ab10-45c2-9206-2d8a349c4a06" />
 
 # Linux Navigation, Users, File System Hierarchy & Basic Commands
 
