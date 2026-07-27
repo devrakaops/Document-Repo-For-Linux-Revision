@@ -337,6 +337,10 @@ When a user performs any action, the request travels through these layers until 
 
 The response then follows the same path back to the user.
 
+<img width="730" height="342" alt="image" src="https://github.com/user-attachments/assets/a57d719d-0724-487a-8ef7-19fe1cdf23e7" />
+
+
+
 The architecture looks like this.
 
 ```
