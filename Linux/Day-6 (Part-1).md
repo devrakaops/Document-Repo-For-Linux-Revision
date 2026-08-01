@@ -1,7 +1,7 @@
 
 ---
 
-# Linux Training – Day 6
+# Linux Training – Day 6 Part-1
 
 # User Administration in Linux
 <img width="1068" height="193" alt="image" src="https://github.com/user-attachments/assets/5540282d-25d3-4d75-9808-ace363adba27" />
