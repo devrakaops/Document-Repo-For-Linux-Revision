@@ -1,7 +1,7 @@
 
 ---
 
-# Day-7: User Administration (Part-3), Sudo, System Monitoring & Linux Permissions
+# Day-7: User Administration (A kind of Day-6 Part-4)
 
 In this session, we continue learning **User Administration** by exploring some advanced configuration files that control how users are created and managed in Linux. After that, we learn how Linux records user activities, how to monitor login history, how the **sudo** mechanism works, and finally begin one of the most important Linux topics: **File Permissions**.
 
