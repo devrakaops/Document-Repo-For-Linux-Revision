@@ -235,7 +235,12 @@ Example:
 
 ```bash
 nmcli connection show
+nmcli connection down <connection-name>
+nmcli connection up <connection-name>
+nmcli connection modify ens160 ipv4.addresses 192.168.X.X/24 ipv4.gateway 192.168.X.X ipv4.dns 8.8.X.X ipv4.method manual
+
 ```
+<img width="983" height="88" alt="image" src="https://github.com/user-attachments/assets/c11d7a84-4d59-48cd-a173-42a9cd0d2990" />
 
 ---
 
@@ -250,6 +255,8 @@ Example:
 ```bash
 nmtui
 ```
+<img width="1359" height="459" alt="image" src="https://github.com/user-attachments/assets/1ac7dea6-f73a-49ca-820c-70317a80c515" />
+
 
 You can configure:
 
@@ -294,7 +301,7 @@ using the mouse.
 ## 1. Check IP Address
 
 ```bash
-ip addr
+ifconfig
 ```
 
 or
@@ -316,7 +323,7 @@ ip route
 or
 
 ```bash
-ip r
+route -n
 ```
 
 Displays the routing table and the default gateway.
@@ -366,18 +373,20 @@ Tests both network connectivity and DNS resolution.
 ```bash
 nslookup google.com
 ```
+<img width="1328" height="332" alt="image" src="https://github.com/user-attachments/assets/c129d071-aa11-4a8b-aa56-bedd94997220" />
+
 
 Displays the IP address of a domain name using the configured DNS server.
 
 ---
 
-## 7. Download a File
+## 7. Download a File or page over the internet
 
 ```bash
 wget https://example.com/file.txt
 ```
 
-Downloads a file from a website.
+wget used to Downloads a file from a website.
 
 ---
 
@@ -391,11 +400,6 @@ Retrieves content from a website or API. It is commonly used to test web servers
 
 ---
 
-## 9. Display Active Network Connections
-
-```bash
-nmcli connection show
-```
 
 Lists all available network connections managed by NetworkManager.
 
@@ -407,10 +411,10 @@ Configure the Primary Virtual Machine with the following details.
 
 | Parameter   | Value                    |
 | ----------- | ------------------------ |
-| IP Address  | 192.168.1.1              |
+| IP Address  | 192.168.10.12            |
 | Subnet Mask | 255.255.255.0            |
-| Gateway     | 192.168.1.254            |
-| DNS Server  | 192.168.1.10             |
+| Gateway     | 192.168.102              |
+| DNS Server  | 8.8.8.8                  |
 | Hostname    | primary.net1.example.com |
 
 ---
