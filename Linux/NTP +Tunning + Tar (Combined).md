@@ -4,6 +4,8 @@
 
 ### 1.1 Why Time Synchronization Is Important
 
+<img width="1283" height="539" alt="image" src="https://github.com/user-attachments/assets/90325c1b-9e06-4949-b21c-8a0fb5e74dca" />
+
 In Linux administration, maintaining the correct system time is very important.
 
 Imagine that we have two servers:
@@ -464,6 +466,9 @@ One of the most useful commands is:
 ```bash
 chronyc sources -v
 ```
+<img width="1244" height="530" alt="image" src="https://github.com/user-attachments/assets/9551de20-fdf0-438e-a3d2-ed2b32cd24aa" />
+
+
 
 This displays the configured time sources and their synchronization status.
 
