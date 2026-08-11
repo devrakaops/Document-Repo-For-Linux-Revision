@@ -87,9 +87,6 @@ or, depending on the Linux distribution/kernel configuration:
 linux16
 ```
 
-
-```
-
 This line contains the parameters that are passed to the Linux kernel during boot.
 
 ---
