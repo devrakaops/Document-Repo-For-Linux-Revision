@@ -1,348 +1,164 @@
-# Flatpak Repository and Application Management
+# Flatpak Application Management — Linux Practical Guide
 
 ## 1. What is Flatpak?
 
-**Flatpak** is a technology used to install and run applications on Linux.
+**Flatpak** is a Linux technology used to install and run applications.
 
-It is mainly popular for **desktop/GUI applications**.
-
-For example:
+It is commonly used for **GUI/Desktop applications** such as:
 
 * GIMP
 * VSCodium
 * VLC
 * LibreOffice
 * Firefox
-* Many other GUI applications
 
-Flatpak applications are usually distributed through a **Flatpak repository**, also called a **remote**.
+Flatpak provides applications in a way that can keep the application and its required runtime/components more independent from the host operating system.
 
-The most popular Flatpak repository is:
+### Simple understanding
 
-**Flathub**
+```text
+Traditional Linux package
+
+DNF
+ ↓
+RPM Package
+ ↓
+System
+```
+
+Flatpak:
+
+```text
+Flatpak
+ ↓
+Flatpak Remote
+ ↓
+Application
+ ↓
+Runtime
+ ↓
+Application runs
+```
+
+> **Important:** Flatpak does not replace DNF/YUM. Both have different purposes.
 
 ---
 
-# 2. Flatpak vs YUM/DNF
+# 2. DNF vs Flatpak
 
-First, one important correction:
+| DNF/YUM                                  | Flatpak                                          |
+| ---------------------------------------- | ------------------------------------------------ |
+| Manages RPM packages                     | Manages Flatpak applications                     |
+| Commonly used for system/server software | Commonly used for desktop applications           |
+| Uses RPM repositories                    | Uses Flatpak remotes                             |
+| Example: `dnf install httpd`             | Example: `flatpak install flathub org.gimp.GIMP` |
+| Packages are integrated with the OS      | Applications can run in a sandbox                |
 
-> **Flatpak does NOT replace YUM or DNF.**
+For example:
 
-YUM/DNF and Flatpak solve related but different problems.
-
-### YUM/DNF
-
-YUM/DNF are Linux **package managers** used mainly for installing and managing RPM packages.
-
-Example:
+### Install Apache using DNF
 
 ```bash
 dnf install httpd
 ```
 
-This installs the Apache HTTP Server package.
-
-YUM/DNF are commonly used for:
-
-* System packages
-* Libraries
-* Server software
-* Services
-* Development packages
-* Dependencies required by the operating system
-
-### Flatpak
-
-Flatpak is mainly used for **desktop applications**, especially when we want applications to be packaged with their required runtime/dependencies and run in a more isolated environment.
-
-Example:
+### Install GIMP using Flatpak
 
 ```bash
 flatpak install flathub org.gimp.GIMP
 ```
 
----
+So don't think:
 
-# 3. Simple Comparison
+> Flatpak replaces DNF.
 
-Think about it like this:
+Think:
 
-```text
-YUM / DNF
-     |
-     +---- RPM packages
-     |
-     +---- System software
-     |
-     +---- Server packages
-     |
-     +---- Libraries
-     |
-     +---- Dependencies
-
-
-Flatpak
-     |
-     +---- Desktop applications
-     |
-     +---- Application runtime
-     |
-     +---- Sandboxed application
-     |
-     +---- Can be installed per-user
-```
-
-So:
-
-> **YUM/DNF = traditional Linux package management**
-
-> **Flatpak = application distribution and sandboxing, especially useful for desktop applications**
+> **DNF and Flatpak are two different application/package management methods.**
 
 ---
 
-# 4. What is a Flatpak Repository?
+# 3. What is a Flatpak Remote?
 
-A **Flatpak repository** is a location from which Flatpak applications and their required components can be downloaded.
+In Flatpak terminology, a repository is generally called a **remote**.
 
-The most popular repository is:
+A remote is a location from which Flatpak can obtain applications and runtimes.
+
+The most commonly used remote is:
 
 ```text
 Flathub
 ```
 
-Flathub contains a very large collection of Linux desktop applications.
-
 For example:
-
-```text
-GIMP
-VLC
-VSCodium
-LibreOffice
-Firefox
-```
-
-The official Flathub repository can be added using its `.flatpakrepo` file. Flatpak documentation describes a `.flatpakrepo` file as containing repository information and its GPG key.
-
-Example:
-
-```bash
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-```
-
-The name `flathub` is simply the **local name** we give to that remote repository.
-
----
-
-# 5. Is Flathub Similar to a YUM Repository?
-
-Yes, conceptually they are similar.
-
-With YUM/DNF:
-
-```text
-YUM/DNF
-   |
-   v
-Repository
-   |
-   v
-RPM Packages
-```
-
-With Flatpak:
-
-```text
-Flatpak
-   |
-   v
-Remote Repository
-   |
-   v
-Flatpak Applications
-```
-
-But internally they work differently.
-
-Do not say:
-
-> "Flatpak repository replaces the YUM repository."
-
-Instead say:
-
-> "Flatpak provides another application distribution mechanism, mainly useful for desktop applications."
-
----
-
-# 6. YUM Repository vs Flatpak Remote
-
-In traditional YUM/DNF configuration, we commonly work with repository configuration files under:
-
-```text
-/etc/yum.repos.d/
-```
-
-For example:
-
-```text
-/etc/yum.repos.d/myrepo.repo
-```
-
-Inside the file we may define:
-
-```text
-[myrepo]
-name=My Repository
-baseurl=http://example.com/repo/
-enabled=1
-gpgcheck=1
-```
-
-Then DNF/YUM can use that repository.
-
-With Flatpak, we can add a remote using:
-
-```bash
-flatpak remote-add
-```
-
-Example:
-
-```bash
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-```
-
-So the basic idea is similar:
-
-```text
-Repository configured
-        ↓
-Application/package searched
-        ↓
-Application/package installed
-```
-
----
-
-# 7. How Does Flatpak Work?
-
-Suppose we want to install GIMP.
-
-The basic flow is:
 
 ```text
 Flathub
    |
-   | Search
-   v
-GIMP
-   |
-   | Install
-   v
-Flatpak
-   |
-   | Runtime + required components
-   v
-GIMP Application
+   +---- GIMP
+   +---- VLC
+   +---- VSCodium
+   +---- LibreOffice
+   +---- Firefox
+   +---- Many more applications
 ```
-
-Flatpak applications can use a shared **runtime**, which provides common libraries and components needed by applications.
-
-This means applications do not necessarily need to depend directly on the host operating system's versions of all those libraries.
 
 ---
 
-# 8. Important Concept: System-wide vs Per-user
+# 4. Flathub
 
-This is one of the most important concepts for the Linux administrator.
+**Flathub** is a large and popular Flatpak application repository.
 
-Flatpak supports two installation scopes:
-
-### System-wide
-
-Application is installed for all users.
-
-```text
-System
- |
- +--- User A → Can use application
- |
- +--- User B → Can use application
- |
- +--- User C → Can use application
-```
-
-### Per-user
-
-Application is installed only for one particular user.
-
-```text
-System
- |
- +--- User A → Application installed
- |
- +--- User B → Cannot use that user installation
- |
- +--- User C → Cannot use that user installation
-```
-
-Flatpak officially supports both **system-wide** and **per-user** installations. A per-user repository is also available only to that particular user.
-
----
-
-# 9. How to Install Flatpak
-
-Before using Flatpak, the Flatpak package itself must be installed.
-
-On many RHEL/Fedora-based systems, we can use:
-
-```bash
-dnf install flatpak -y
-```
-
-Verify:
-
-```bash
-flatpak --version
-```
-
-Example output:
-
-```text
-Flatpak 1.x.x
-```
-
-If the package is not available, first make sure the required OS repositories are configured and accessible.
-
----
-
-# 10. Add Flathub Repository System-wide
-
-To add Flathub for the whole system:
+Before installing applications from Flathub, we normally add the Flathub remote.
 
 ```bash
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 ```
 
-Now check the configured remotes:
+Here:
+
+```text
+flatpak
+    ↓
+remote-add
+    ↓
+flathub
+    ↓
+Repository URL
+```
+
+`flathub` is the **local name** we give to the remote.
+
+---
+
+# 5. Check Configured Remotes
+
+After adding Flathub:
 
 ```bash
 flatpak remotes
 ```
 
-You may see:
+Example:
 
 ```text
 Name
 flathub
 ```
 
-This means the Flathub remote is configured.
+For more information:
+
+```bash
+flatpak remotes --show-details
+```
+
+This can show details such as the remote URL.
 
 ---
 
-# 11. Search for an Application
+# 6. Search for an Application
+
+Suppose we want GIMP.
 
 Use:
 
@@ -356,105 +172,665 @@ Or:
 flatpak search codium
 ```
 
-The search normally displays the application name and its **Application ID**.
+The search result gives us the application's **Application ID**.
 
-For example, the current Flathub application ID for VSCodium is:
+For example:
 
 ```text
 com.vscodium.codium
 ```
 
-This Application ID is important because Flatpak commands commonly use the ID to identify the application.
+### Important
+
+There are two things to remember:
+
+```text
+Application Name
+       ↓
+VSCodium
+```
+
+and:
+
+```text
+Application ID
+       ↓
+com.vscodium.codium
+```
+
+When installing, we normally use the **Application ID**.
 
 ---
 
-# 12. Install an Application
+# 7. See All Applications Available in a Remote
 
-For a normal system-wide installation:
-
-```bash
-flatpak install flathub org.gimp.GIMP
-```
-
-Flatpak will ask for confirmation if required.
-
-To automatically answer yes:
+If you want to see applications available in Flathub:
 
 ```bash
-flatpak install flathub org.gimp.GIMP -y
+flatpak remote-ls --app flathub
 ```
+
+This can produce a very large list.
+
+To search inside that list:
+
+```bash
+flatpak remote-ls --app flathub | grep -i codium
+```
+
+For QR-related applications:
+
+```bash
+flatpak remote-ls --app flathub | grep -i qr
+```
+
+### Difference
+
+```bash
+flatpak search gimp
+```
+
+means:
+
+> Search for GIMP using Flatpak's search mechanism.
+
+Whereas:
+
+```bash
+flatpak remote-ls --app flathub
+```
+
+means:
+
+> List applications available in the Flathub remote.
 
 ---
 
-# 13. Run an Application
+# 8. Install an Application
 
-After installation:
-
-```bash
-flatpak run org.gimp.GIMP
-```
-
-The basic format is:
+General syntax:
 
 ```bash
-flatpak run APPLICATION_ID
+flatpak install <remote> <application-id>
 ```
 
 Example:
 
 ```bash
-flatpak run com.vscodium.codium
+flatpak install flathub org.gimp.GIMP
 ```
+
+Automatically answer `yes`:
+
+```bash
+flatpak install -y flathub org.gimp.GIMP
+```
+
+### Understand the command
+
+```text
+flatpak
+   ↓
+install
+   ↓
+flathub
+   ↓
+org.gimp.GIMP
+```
+
+Meaning:
+
+> Install the application `org.gimp.GIMP` from the `flathub` remote.
 
 ---
 
-# 14. Check Installed Applications
+# 9. Verify Installed Applications
 
-Use:
+After installation:
 
 ```bash
 flatpak list
 ```
 
-This displays installed Flatpak applications and runtimes.
-
-You can also specifically list applications:
+If you want to see only applications:
 
 ```bash
 flatpak list --app
 ```
 
-Flatpak's `list` command can show system-wide and per-user installations, while `--user` limits the operation to the per-user installation.
+For user-installed applications:
+
+```bash
+flatpak list --user
+```
+
+Only user applications:
+
+```bash
+flatpak list --user --app
+```
 
 ---
 
-# 15. Per-user Flatpak Installation
+# 10. Get Application Information
 
-Now we come to the most important practical part.
-
-Suppose we have a Linux user:
-
-```text
-bammbamm
-```
-
-The requirement is:
-
-> Install a Flatpak application only for user `bammbamm`.
-
-We need to use:
+Use:
 
 ```bash
+flatpak info <application-id>
+```
+
+Example:
+
+```bash
+flatpak info org.gimp.GIMP
+```
+
+For a user installation:
+
+```bash
+flatpak info --user com.vscodium.codium
+```
+
+This gives information such as:
+
+* Application ID
+* Version
+* Branch
+* Installation location
+* Runtime
+* Origin/remote
+
+---
+
+# 11. Run an Application
+
+General syntax:
+
+```bash
+flatpak run <application-id>
+```
+
+Example:
+
+```bash
+flatpak run org.gimp.GIMP
+```
+
+For VSCodium:
+
+```bash
+flatpak run com.vscodium.codium
+```
+
+So the basic flow becomes:
+
+```text
+Search
+  ↓
+Get Application ID
+  ↓
+Install
+  ↓
+Run
+```
+
+Example:
+
+```bash
+flatpak search gimp
+
+flatpak install flathub org.gimp.GIMP
+
+flatpak run org.gimp.GIMP
+```
+
+---
+
+# 12. Update Applications
+
+To update installed Flatpak applications and runtimes:
+
+```bash
+flatpak update
+```
+
+Automatically answer yes:
+
+```bash
+flatpak update -y
+```
+
+For a specific user installation:
+
+```bash
+flatpak update --user
+```
+
+---
+
+# 13. Remove an Application
+
+General syntax:
+
+```bash
+flatpak uninstall <application-id>
+```
+
+Example:
+
+```bash
+flatpak uninstall org.gimp.GIMP
+```
+
+Automatically answer yes:
+
+```bash
+flatpak uninstall -y org.gimp.GIMP
+```
+
+For a user installation:
+
+```bash
+flatpak uninstall --user com.vscodium.codium
+```
+
+---
+
+# 14. Remove Unused Components
+
+Sometimes an application is removed but some runtimes are no longer required.
+
+You can clean up unused components:
+
+```bash
+flatpak uninstall --unused
+```
+
+This is useful for cleanup.
+
+---
+
+# 15. Repair Flatpak
+
+If Flatpak reports repository/object problems, use:
+
+```bash
+flatpak repair
+```
+
+For a per-user installation:
+
+```bash
+flatpak repair --user
+```
+
+This is a useful troubleshooting command.
+
+---
+
+# 16. AppStream Metadata
+
+This is important when troubleshooting `flatpak search`.
+
+Flatpak uses **AppStream metadata** to provide application information used by search and software-center-style interfaces.
+
+You can refresh the AppStream metadata using:
+
+```bash
+flatpak update --appstream
+```
+
+---
+
+# 17. Troubleshooting `flatpak search`
+
+Suppose you run:
+
+```bash
+flatpak search QR-ScanGen
+```
+
+and receive:
+
+```text
+Failed to parse /var/lib/flatpak/appstream/flathub/x86_64/active/appstream.xml.gz
+```
+
+This tells us there is a problem with the **local AppStream metadata**.
+
+It does **not necessarily mean that Flathub itself is unavailable**.
+
+That's why this can happen:
+
+```bash
+flatpak search QR-ScanGen
+```
+
+❌ fails
+
+while:
+
+```bash
+flatpak remote-ls --app flathub
+```
+
+✅ works.
+
+The two commands use different information.
+
+---
+
+# 18. First Solution for Search Problem
+
+First refresh AppStream metadata:
+
+```bash
+flatpak update --appstream
+```
+
+Then try:
+
+```bash
+flatpak search QR-ScanGen
+```
+
+---
+
+# 19. Second Solution — Repair Flatpak
+
+If the problem continues:
+
+```bash
+flatpak repair
+```
+
+Then:
+
+```bash
+flatpak update --appstream
+```
+
+Try again:
+
+```bash
+flatpak search QR-ScanGen
+```
+
+---
+
+# 20. Third Solution — Check Flatpak Version
+
+Check your version:
+
+```bash
+flatpak --version
+```
+
+If you are working on an older Linux system, an old Flatpak/AppStream parser can sometimes cause metadata parsing problems.
+
+Make sure Flatpak is properly updated through your operating system's package management.
+
+For example:
+
+```bash
+dnf update flatpak
+```
+
+Then:
+
+```bash
+flatpak --version
+```
+
+---
+
+# 21. Alternative Search Method
+
+If `flatpak search` is not working, you can directly list the applications available from the remote:
+
+```bash
+flatpak remote-ls --app flathub
+```
+
+Then use `grep`:
+
+```bash
+flatpak remote-ls --app flathub | grep -i qr
+```
+
+This is a very useful practical troubleshooting technique.
+
+---
+
+# 22. Other Flatpak Remotes
+
+Flathub is not the only Flatpak remote.
+
+Flatpak can work with multiple remotes.
+
+For example:
+
+```text
+System
+  |
+  +---- flathub
+  |
+  +---- gnome
+  |
+  +---- another-remote
+```
+
+A project or organization can provide its own Flatpak remote.
+
+Usually, you find the remote URL in the **official documentation of that project**.
+
+The important command is:
+
+```bash
+flatpak remote-add <remote-name> <URL>
+```
+
+For example:
+
+```bash
+flatpak remote-add gnome https://sdk.gnome.org/gnome.flatpakrepo
+```
+
+Here:
+
+```text
+gnome
+```
+
+is the local name assigned to that remote.
+
+---
+
+# 23. Flatpak Repository vs YUM Repository
+
+This is a useful comparison for students.
+
+### YUM/DNF
+
+You may already know:
+
+```text
+/etc/yum.repos.d/
+       |
+       +---- rhel.repo
+       +---- appstream.repo
+       +---- custom.repo
+```
+
+YUM/DNF uses `.repo` configuration files.
+
+### Flatpak
+
+Flatpak does **not** normally use:
+
+```text
+/etc/flatpak.repos.d/
+```
+
+Instead, Flatpak maintains its own repository and installation data.
+
+---
+
+# 24. Where Does Flatpak Store Its Data?
+
+## System-wide
+
+The normal system-wide Flatpak location is:
+
+```text
+/var/lib/flatpak/
+```
+
+You may see directories such as:
+
+```text
+/var/lib/flatpak/
+├── app/
+├── runtime/
+└── repo/
+```
+
+---
+
+## Per-user
+
+For a user installation:
+
+```text
+~/.local/share/flatpak/
+```
+
+For user `bammbamm`:
+
+```text
+/home/bammbamm/.local/share/flatpak/
+```
+
+You may see:
+
+```text
+~/.local/share/flatpak/
+├── app/
+├── runtime/
+└── repo/
+```
+
+---
+
+# 25. Remote Configuration
+
+For a system-wide Flatpak installation, remote configuration is maintained under the Flatpak repository data, commonly:
+
+```text
+/var/lib/flatpak/repo/config
+```
+
+For a per-user installation:
+
+```text
+~/.local/share/flatpak/repo/config
+```
+
+### Important
+
+Don't compare this directly with:
+
+```text
+/etc/yum.repos.d/*.repo
+```
+
+They are **not the same implementation**.
+
+The concept is similar:
+
+```text
+YUM/DNF
+Repository configuration
+        ↓
+/etc/yum.repos.d/*.repo
+```
+
+Flatpak:
+
+```text
+Flatpak remote configuration
+        ↓
+Flatpak repository data
+```
+
+---
+
+# 26. System-wide vs Per-user
+
+This is one of the most important Flatpak concepts.
+
+Flatpak can work at two levels.
+
+## System-wide
+
+```bash
+flatpak install flathub org.gimp.GIMP
+```
+
+This uses the system installation.
+
+Conceptually:
+
+```text
+System
+   |
+   +--- User A → Application available
+   |
+   +--- User B → Application available
+   |
+   +--- User C → Application available
+```
+
+---
+
+## Per-user
+
+Use:
+
+```bash
+flatpak install --user flathub org.gimp.GIMP
+```
+
+Conceptually:
+
+```text
+System
+   |
+   +--- User A → Application installed
+   |
+   +--- User B → No user installation
+   |
+   +--- User C → No user installation
+```
+
+The important option is:
+
+```text
 --user
 ```
 
-The `--user` option tells Flatpak:
+Remember:
 
-> "Perform this operation for the current user only."
+> `--user` means perform the operation for the current user's Flatpak installation.
 
 ---
 
-# 16. Configure a Per-user Repository
+# 27. Per-user Remote
+
+Suppose the requirement says:
+
+> Configure a Flatpak remote called `extra` only for user `bammbamm`.
 
 First switch to the user:
 
@@ -462,51 +838,13 @@ First switch to the user:
 su - bammbamm
 ```
 
-Now add the repository:
+Now add the remote:
 
 ```bash
 flatpak remote-add --user --if-not-exists extra https://dl.flathub.org/repo/flathub.flatpakrepo
 ```
 
-Notice the important option:
-
-```text
---user
-```
-
-And notice that we named the repository:
-
-```text
-extra
-```
-
-So:
-
-```text
-extra = local name of the Flatpak remote
-```
-
-It does not mean that `extra` is a special Flatpak repository.
-
-We could have named it:
-
-```text
-myrepo
-```
-
-or:
-
-```text
-flathub-user
-```
-
-The name is chosen by us.
-
----
-
-# 17. Verify the Per-user Repository
-
-Run:
+Check it:
 
 ```bash
 flatpak remotes --user
@@ -518,90 +856,33 @@ You should see:
 extra
 ```
 
-This tells us that the remote belongs to the current user.
-
-We can also use:
-
-```bash
-flatpak remotes --user --show-details
-```
-
 ---
 
-# 18. Search for Codium
+# 28. Install an Application for `bammbamm`
 
-Now search:
+Search:
 
 ```bash
-flatpak search --user codium
+flatpak search codium
 ```
 
-You may see VSCodium.
-
-Its Application ID is:
+Suppose the Application ID is:
 
 ```text
 com.vscodium.codium
 ```
 
-The current Flathub listing identifies VSCodium with this Application ID.
-
----
-
-# 19. Install Codium for Only bammbamm
-
-Use:
+Install:
 
 ```bash
 flatpak install --user extra com.vscodium.codium -y
 ```
 
-Here:
-
-```text
-flatpak
-    ↓
-install
-    ↓
---user
-    ↓
-extra
-    ↓
-com.vscodium.codium
-```
-
-Meaning:
-
-* `flatpak` → Flatpak command
-* `install` → install application
-* `--user` → install only for current user
-* `extra` → repository/remote name
-* `com.vscodium.codium` → application ID
-* `-y` → automatically answer yes
-
----
-
-# 20. Verify the Application
-
-Run:
+Verify:
 
 ```bash
 flatpak list --user
 ```
-
-You should see the installed application.
-
-You can also check:
-
-```bash
-flatpak info --user com.vscodium.codium
-```
-
-This gives information about the application.
-
----
-
-# 21. Run Codium
 
 Run:
 
@@ -609,81 +890,75 @@ Run:
 flatpak run com.vscodium.codium
 ```
 
-Because the application was installed for `bammbamm`, this installation belongs to that user.
-
 ---
 
-# 22. Verify Other Users Cannot See the User Installation
+# 29. Verify User Isolation
 
-Now exit from `bammbamm`:
+Exit from `bammbamm`:
 
 ```bash
 exit
 ```
 
-Or:
-
-```bash
-Ctrl + D
-```
-
-You are now back to the previous user.
-
-Run:
+Now check the current user's Flatpak installation:
 
 ```bash
 flatpak list --user
 ```
 
-The `bammbamm` user's application will not appear in the current user's per-user installation.
+The VSCodium installation belonging to `bammbamm` should not appear as the current user's per-user installation.
 
-This demonstrates the difference between:
+Likewise:
 
-```text
-System-wide installation
+```bash
+flatpak remotes --user
 ```
 
-and:
+The `extra` remote configured specifically for `bammbamm` should not appear in another user's per-user remotes.
 
-```text
-Per-user installation
-```
+### Important clarification
+
+This does **not** mean the application is magically invisible to the entire operating system.
+
+It means:
+
+> The Flatpak application and remote were configured in `bammbamm`'s **per-user Flatpak installation**.
 
 ---
 
-# 23. Complete Practical Assignment
+# 30. Complete Practical Assignment
 
-## Assignment
+## Question
 
-**Configure a Flatpak remote repository named `extra` that is available only to the user `bammbamm`.**
+Configure a Flatpak remote repository named `extra` that is available only to the user `bammbamm`.
 
-Repository URL:
+Repository:
 
 ```text
 https://dl.flathub.org/repo/flathub.flatpakrepo
 ```
 
-Using the `extra` repository, install the Flatpak application **Codium/VSCodium** for the user `bammbamm`.
+Using the `extra` repository, install **VSCodium/Codium** for `bammbamm`.
 
-Finally, verify that the repository and application are accessible only to `bammbamm` and not as a per-user installation for other users.
+Finally, verify that the remote and application are available in `bammbamm`'s user installation and are not present in another user's per-user installation.
 
 ---
 
-# 24. Assignment Solution
+## Solution
 
-### Step 1: Switch to bammbamm
+### Step 1 — Switch to the user
 
 ```bash
 su - bammbamm
 ```
 
-### Step 2: Add the repository for this user
+### Step 2 — Add the remote
 
 ```bash
 flatpak remote-add --user --if-not-exists extra https://dl.flathub.org/repo/flathub.flatpakrepo
 ```
 
-### Step 3: Verify the repository
+### Step 3 — Verify remote
 
 ```bash
 flatpak remotes --user
@@ -695,342 +970,362 @@ Expected:
 extra
 ```
 
-### Step 4: Search for Codium
-
-```bash
-flatpak search --user codium
-```
-
-Find the VSCodium Application ID:
-
-```text
-com.vscodium.codium
-```
-
-### Step 5: Install the application
-
-```bash
-flatpak install --user extra com.vscodium.codium -y
-```
-
-### Step 6: Verify installation
-
-```bash
-flatpak list --user
-```
-
-### Step 7: Check application information
-
-```bash
-flatpak info --user com.vscodium.codium
-```
-
-### Step 8: Exit from bammbamm
-
-```bash
-exit
-```
-
-Or:
-
-```bash
-Ctrl + D
-```
-
-### Step 9: Check from another user
-
-```bash
-flatpak remotes --user
-```
-
-The `extra` remote configured for `bammbamm` should not appear in the current user's per-user remotes.
-
-Also:
-
-```bash
-flatpak list --user
-```
-
-The VSCodium installation belonging to `bammbamm` should not appear as the current user's per-user installation.
-
----
-
-# 25. Very Important: Don't Confuse `--user` and System-wide
-
-Remember this simple rule:
-
-```text
-Without --user
-        ↓
-System-wide operation
-```
-
-```text
-With --user
-        ↓
-Current user's operation
-```
-
-Example:
-
-### System-wide repository
-
-```bash
-flatpak remote-add flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-```
-
-### Per-user repository
-
-```bash
-flatpak remote-add --user extra https://dl.flathub.org/repo/flathub.flatpakrepo
-```
-
----
-
-# 26. System-wide Application Installation
-
-```bash
-flatpak install flathub org.gimp.GIMP
-```
-
-Conceptually:
-
-```text
-System
-  |
-  +--- User A → GIMP available
-  |
-  +--- User B → GIMP available
-  |
-  +--- User C → GIMP available
-```
-
----
-
-# 27. Per-user Application Installation
-
-```bash
-flatpak install --user extra com.vscodium.codium
-```
-
-Conceptually:
-
-```text
-System
-  |
-  +--- bammbamm → VSCodium available
-  |
-  +--- User B   → Not installed for this user
-  |
-  +--- User C   → Not installed for this user
-```
-
----
-
-# 28. Most Important Commands
-
-| Purpose                 | Command                                |
-| ----------------------- | -------------------------------------- |
-| Check Flatpak           | `flatpak --version`                    |
-| Add remote              | `flatpak remote-add`                   |
-| List remotes            | `flatpak remotes`                      |
-| List user remotes       | `flatpak remotes --user`               |
-| Search application      | `flatpak search APP`                   |
-| Install application     | `flatpak install REMOTE APP_ID`        |
-| User installation       | `flatpak install --user REMOTE APP_ID` |
-| List applications       | `flatpak list`                         |
-| List user applications  | `flatpak list --user`                  |
-| Application information | `flatpak info APP_ID`                  |
-| Run application         | `flatpak run APP_ID`                   |
-| Update applications     | `flatpak update`                       |
-| Remove application      | `flatpak uninstall APP_ID`             |
-
----
-
-# 29. Common Mistakes
-
-### Mistake 1: Writing `flatpack`
-
-Wrong:
-
-```bash
-flatpack
-```
-
-Correct:
-
-```bash
-flatpak
-```
-
----
-
-### Mistake 2: Using a normal hyphen instead of `--user`
-
-Correct:
-
-```bash
-flatpak install --user extra com.vscodium.codium
-```
-
-`--user` contains **two normal hyphens**.
-
----
-
-### Mistake 3: Using `codium` as the application ID without checking
-
-First search:
+### Step 4 — Search
 
 ```bash
 flatpak search codium
 ```
 
-Then use the correct Application ID.
+### Step 5 — Install
 
-For current VSCodium on Flathub:
+```bash
+flatpak install --user extra com.vscodium.codium -y
+```
 
-```text
-com.vscodium.codium
+### Step 6 — Verify installation
+
+```bash
+flatpak list --user
+```
+
+### Step 7 — Run
+
+```bash
+flatpak run com.vscodium.codium
+```
+
+### Step 8 — Exit
+
+```bash
+exit
+```
+
+### Step 9 — Verify from another user
+
+```bash
+flatpak remotes --user
+```
+
+and:
+
+```bash
+flatpak list --user
+```
+
+The `extra` remote and VSCodium should not appear as **that other user's** per-user installation.
+
+---
+
+# 31. Complete Command Reference
+
+## Repository / Remote
+
+### Add remote
+
+```bash
+flatpak remote-add <name> <URL>
+```
+
+### Add remote for current user
+
+```bash
+flatpak remote-add --user <name> <URL>
+```
+
+### List remotes
+
+```bash
+flatpak remotes
+```
+
+### List user remotes
+
+```bash
+flatpak remotes --user
+```
+
+### Show remote details
+
+```bash
+flatpak remotes --show-details
+```
+
+### Remove remote
+
+```bash
+flatpak remote-delete <name>
+```
+
+### Remove user remote
+
+```bash
+flatpak remote-delete --user <name>
 ```
 
 ---
 
-### Mistake 4: Forgetting `--user`
+# 32. Search and Discovery
 
-If the requirement says:
-
-> "Install only for bammbamm"
-
-then remember:
+### Search application
 
 ```bash
+flatpak search <keyword>
+```
+
+### List applications in remote
+
+```bash
+flatpak remote-ls --app flathub
+```
+
+### Search remote output
+
+```bash
+flatpak remote-ls --app flathub | grep -i <keyword>
+```
+
+### Show remote application information
+
+```bash
+flatpak remote-info flathub <application-id>
+```
+
+---
+
+# 33. Installation
+
+### Install
+
+```bash
+flatpak install <remote> <application-id>
+```
+
+### Install automatically
+
+```bash
+flatpak install -y <remote> <application-id>
+```
+
+### Install for current user
+
+```bash
+flatpak install --user <remote> <application-id>
+```
+
+---
+
+# 34. Application Management
+
+### List installed applications
+
+```bash
+flatpak list --app
+```
+
+### List user applications
+
+```bash
+flatpak list --user --app
+```
+
+### Application information
+
+```bash
+flatpak info <application-id>
+```
+
+### Run application
+
+```bash
+flatpak run <application-id>
+```
+
+### Remove application
+
+```bash
+flatpak uninstall <application-id>
+```
+
+### Remove user application
+
+```bash
+flatpak uninstall --user <application-id>
+```
+
+---
+
+# 35. Update and Maintenance
+
+### Update everything
+
+```bash
+flatpak update
+```
+
+### Update user installation
+
+```bash
+flatpak update --user
+```
+
+### Refresh AppStream metadata
+
+```bash
+flatpak update --appstream
+```
+
+### Remove unused components
+
+```bash
+flatpak uninstall --unused
+```
+
+### Repair Flatpak
+
+```bash
+flatpak repair
+```
+
+### Repair user installation
+
+```bash
+flatpak repair --user
+```
+
+---
+
+# 36. The 10 Commands Students Should Remember
+
+Don't try to memorize every Flatpak command initially.
+
+Start with these:
+
+```bash
+flatpak --version
+```
+
+```bash
+flatpak remotes
+```
+
+```bash
+flatpak search <keyword>
+```
+
+```bash
+flatpak remote-ls --app flathub
+```
+
+```bash
+flatpak install flathub <application-id>
+```
+
+```bash
+flatpak list --app
+```
+
+```bash
+flatpak info <application-id>
+```
+
+```bash
+flatpak run <application-id>
+```
+
+```bash
+flatpak update
+```
+
+```bash
+flatpak uninstall <application-id>
+```
+
+And remember one special option:
+
+```text
 --user
 ```
 
-For example:
-
-```bash
-flatpak install --user extra com.vscodium.codium
-```
+which is used when you want to work with the **current user's Flatpak installation**.
 
 ---
 
-# 30. Easy Way to Remember the Practical
-
-For a **per-user Flatpak assignment**, remember this sequence:
+# 37. Easy Memory Map
 
 ```text
-1. Switch user
-      ↓
-2. Add repository with --user
-      ↓
-3. Check repository with --user
-      ↓
-4. Search application
-      ↓
-5. Install with --user
-      ↓
-6. Check application with --user
-      ↓
-7. Exit user
-      ↓
-8. Verify it is not installed for another user
+                 FLATPAK
+                    |
+                    |
+          +---------+---------+
+          |                   |
+       REMOTE              APPLICATION
+          |                   |
+       flathub                |
+          |                   |
+          |             Application ID
+          |                   |
+          |          +--------+--------+
+          |          |        |        |
+        search     install   run     remove
+          |          |        |        |
+          +----------+--------+--------+
+                     |
+                   update
 ```
 
-Commands:
-
-```bash
-su - bammbamm
-
-flatpak remote-add --user --if-not-exists extra https://dl.flathub.org/repo/flathub.flatpakrepo
-
-flatpak remotes --user
-
-flatpak search --user codium
-
-flatpak install --user extra com.vscodium.codium -y
-
-flatpak list --user
-
-exit
-
-flatpak remotes --user
-
-flatpak list --user
-```
-
----
-
-# 31. One Important Correction to the Original Understanding
-
-It is tempting to remember it like this:
+For per-user work:
 
 ```text
-YUM/DNF → Server applications
-Flatpak → GUI applications
+                    --user
+                      |
+                      ↓
+             Current User Only
 ```
-
-This is a **useful beginner-level rule**, but it is not a strict technical rule.
-
-For example, some GUI applications can be installed through RPM/DNF, and Flatpak is not limited to only GUI software.
-
-A better statement is:
-
-> **DNF manages traditional RPM packages provided by Linux repositories, while Flatpak provides an application distribution and sandboxing model that is especially common for desktop applications.**
-
-Also, Flatpak's per-user capability is **not the same thing as saying the application is completely isolated from the operating system**. Flatpak applications run in a sandbox with controlled access to host resources, and permissions can be managed.
 
 ---
 
-# 32. Final Classroom Summary
+# 38. Practical Workflow to Remember
 
-If a student asks:
+When you get a Flatpak task in an exam or real environment, think in this order:
 
-### "What is Flatpak?"
-
-Answer:
-
-> Flatpak is a Linux technology used to distribute, install, and run applications, especially desktop applications, in a sandboxed environment.
-
-### "What is Flathub?"
-
-Answer:
-
-> Flathub is a popular Flatpak application repository from which we can find and install many Linux applications.
-
-### "Does Flatpak replace DNF?"
-
-Answer:
-
-> No. DNF and Flatpak are different tools. DNF manages RPM packages, while Flatpak provides another application distribution and sandboxing mechanism.
-
-### "Can Flatpak install an application only for one user?"
-
-Answer:
-
-> Yes. Use the `--user` option.
+```text
+1. Is Flatpak installed?
+        ↓
+2. Is the required remote configured?
+        ↓
+3. Search the application
+        ↓
+4. Find Application ID
+        ↓
+5. Install application
+        ↓
+6. Verify installation
+        ↓
+7. Run application
+        ↓
+8. Update when required
+        ↓
+9. Remove when required
+```
 
 Example:
 
 ```bash
-flatpak install --user extra com.vscodium.codium
+flatpak --version
+
+flatpak remotes
+
+flatpak search gimp
+
+flatpak install flathub org.gimp.GIMP
+
+flatpak list --app
+
+flatpak run org.gimp.GIMP
+
+flatpak update
+
+flatpak uninstall org.gimp.GIMP
 ```
 
-### "What is the most important thing in the assignment?"
 
-Remember:
-
-```text
---user
-```
-
-It tells Flatpak to work with the **current user's installation** rather than the default system-wide installation.
-
-### One-line memory trick
-
-```text
-YUM/DNF → RPM packages
-Flatpak → Applications
-Flathub → Flatpak repository
---user → Current user only
-```
